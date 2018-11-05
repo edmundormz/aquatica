@@ -1,8 +1,8 @@
 #include "ESP8266WiFi.h"
 
 // WiFi parameters to be configured
-const char* ssid = "Luah";
-const char* password = "R0b0t1c4";
+const char* ssid = "Totalplay-8195";
+const char* password = "81956A81qN3nEKbx";
 
 void setup(void)
 { 
