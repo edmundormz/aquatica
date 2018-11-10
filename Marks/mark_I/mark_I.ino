@@ -6,13 +6,13 @@
 
 MFRC522 mfrc522(SS_PIN,RST_PIN);
 
-int statuss = 0;
-int out = 0;
+//int statuss = 0;
+//int out = 0;
 
 void setup(){
   Serial.begin(9600);
-  SPI.begin();
-  mfrc522.PCD_Init();
+  SPI.begin();          //Initiates SPI connection between RFID module and Arduino
+  mfrc522.PCD_Init();   //Initiates MFRC522 RFID module
 }
 
 void loop(){
