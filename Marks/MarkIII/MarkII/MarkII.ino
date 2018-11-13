@@ -5,9 +5,9 @@
 
 #define SS_PIN 4                            //D2
 #define RST_PIN 5                           //D1
-#define access_led 9 //GPIO_09
-#define block_led 10 //GPIO_10
-#define relay 16
+#define access_led 2
+#define block_led 0
+//#define relay 16
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
 HTTPClient http;                            //HTTPClient object
@@ -31,8 +31,8 @@ void setup(void)
   Serial.begin(9600);
   SPI.begin();
   mfrc522.PCD_Init();
-  //pinMode(access_led, OUTPUT);
-  //pinMode(block_led, OUTPUT);
+  pinMode(access_led, OUTPUT);
+  pinMode(block_led, OUTPUT);
 }
 
 void connectWiFi(){
@@ -44,6 +44,7 @@ void connectWiFi(){
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println(WiFi.localIP());
+  return;
 }
 
 void processRFID(){
@@ -101,12 +102,11 @@ void loop() {
   //Check WiFi connection
   if(WiFi.status() != WL_CONNECTED){
     connectWiFi();
-    return;
   }
 
   //Turn off LEDs
-  //digitalWrite(access_led, LOW);
-  //digitalWrite(block_led, LOW);
+  digitalWrite(access_led, LOW);
+  digitalWrite(block_led, LOW);
   
   //RFID Card detection
   if (!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
