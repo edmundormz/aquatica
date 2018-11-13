@@ -7,7 +7,8 @@
 #define RST_PIN 5                           //D1
 #define access_led 2
 #define block_led 0
-//#define relay 16
+#define relay 15
+#define relay_timing 1500
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
 HTTPClient http;                            //HTTPClient object
@@ -33,6 +34,7 @@ void setup(void)
   mfrc522.PCD_Init();
   pinMode(access_led, OUTPUT);
   pinMode(block_led, OUTPUT);
+  pinMode(relay, OUTPUT);
 }
 
 void connectWiFi(){
@@ -64,8 +66,10 @@ void processRFID(){
 void blink_led(bool access){
   if (access == true){
         digitalWrite(access_led, HIGH);
-        delay(500);
+        digitalWrite(relay, HIGH);
+        delay(relay_timing);
         digitalWrite(access_led, LOW);
+        digitalWrite(relay, LOW);
       }
       else{
         for(int i = 0; i<5; i++){
@@ -107,6 +111,7 @@ void loop() {
   //Turn off LEDs
   digitalWrite(access_led, LOW);
   digitalWrite(block_led, LOW);
+  digitalWrite(relay, LOW);
   
   //RFID Card detection
   if (!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
