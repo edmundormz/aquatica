@@ -108,15 +108,15 @@ void webRequest(){
 }
 
 void loop() {
-  //Check WiFi connection
-  if(WiFi.status() != WL_CONNECTED){
-    connectWiFi();
-  }
-
   //Turn off LEDs
   digitalWrite(access_led, LOW);
   digitalWrite(block_led, LOW);
   digitalWrite(relay, LOW);
+  
+  //Check WiFi connection
+  if(WiFi.status() != WL_CONNECTED){
+    connectWiFi();
+  }
   
   //RFID Card detection
   if (!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
