@@ -34,7 +34,7 @@ String request = "";
 
 void setup(void)
 { 
-  Serial.begin(9600);
+  //Serial.begin(9600);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
@@ -51,24 +51,26 @@ void connectWiFi(){
     delay(250);
     digitalWrite(wifi_led, HIGH);
     delay(250);
-    Serial.print(".");
+    //Serial.print(".");
   }
+  /*
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println(WiFi.localIP());
+  */
   return;
 }
 
 void processRFID(){
   for(byte i = 0; i < mfrc522.uid.size; i++){
-    Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    Serial.print(mfrc522.uid.uidByte[i], HEX);
+    //Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
+    //Serial.print(mfrc522.uid.uidByte[i], HEX);
     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? "0" : ""));
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
   //Testing IDs: 22f86c0e, 81007408, 199059D3 //62309331  //199059D3
   content.toUpperCase();
-  Serial.println(content);
+  //Serial.println(content);
   client_id = content;
   content = "";
   return;
@@ -77,10 +79,10 @@ void processRFID(){
 void blink_led(bool access){
   if (access == true){
         digitalWrite(relay2, HIGH);
-        digitalWrite(relay1, HIGH);
+        //digitalWrite(relay1, HIGH);
         delay(relay_timing);
         digitalWrite(relay2, LOW);
-        digitalWrite(relay1, LOW);
+        //digitalWrite(relay1, LOW);
       }
       else{
         digitalWrite(led_404, HIGH);
@@ -92,7 +94,7 @@ void blink_led(bool access){
 
 void webRequest(){
     request =  server_address + client_id;
-    Serial.println(request);
+    //Serial.println(request);
     http.begin(request);                    //Specify request destination
     int httpCode = http.GET();              //Send the request
     if (httpCode > 0) {                     //Check the returning code
@@ -106,7 +108,7 @@ void webRequest(){
       }
     }
     else{
-      Serial.println("ServerNotFound");
+      //Serial.println("ServerNotFound");
       for(int i = 0; i<5; i++){
         digitalWrite(led_404, LOW);
         delay(100);
@@ -140,6 +142,6 @@ void loop() {
   }
   processRFID();
   webRequest();
-  Serial.println("End of process");
+  //Serial.println("End of process");
   //delay(2000);
   }
