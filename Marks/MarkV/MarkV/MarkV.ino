@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>                  //Basic ESP8266 library
+#include <ESP8266WiFiMulti.h>             //To connect to different networks
 #include <ESP8266HTTPClient.h>            //For making HTTP requests
 #include <ESP8266WebServer.h>             //To enable web service and upload scripts
 #include <ESP8266mDNS.h>                  //To enable multicast DNS service
@@ -15,6 +16,7 @@
 #define relay_timing 2000                   //Time to leave the relays closed
 
 
+ESP8266WiFiMulti wifiMulti;                 //WiFi Multi object
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
 HTTPClient http;                            //HTTPClient object
 ESP8266WebServer httpServer(80);            //Opens web server on port 80
@@ -25,11 +27,7 @@ String content;
 byte letter;
 
 //WiFi variables
-const char* host = "node1-webupdate";
-const char* ssid = "Luah";
-const char* password = "R0b0t1c4";
-//const char* ssid = "PidemeLaContrasenia";
-//const char* password = "LadyChewbaca1001";
+const char* host = "node1";
 //String server_address = "http://192.168.0.104/checkStringID/";
 String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
@@ -49,8 +47,10 @@ void setup(void)
 
 void connectWiFi(){
   WiFi.mode(WIFI_STA);                      //Defines ESP8266 as a client, not station
-  WiFi.begin(ssid, password);               // Connect to WiFi
-  while (WiFi.status() != WL_CONNECTED) {
+  wifiMulti.addAP("Luah", "R0b0t1c4");
+  wifiMulti.addAP("PidemeLaContrasenia", "LadyChewbaca1001");
+  //WiFi.begin(ssid, password);               // Connect to WiFi
+  while (wifiMulti.run() != WL_CONNECTED) {
     digitalWrite(wifi_led, LOW);
     delay(250);
     digitalWrite(wifi_led, HIGH);
