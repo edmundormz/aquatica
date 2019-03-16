@@ -9,7 +9,7 @@
 #define relay2 2                            //D4
 #define led_404 0                           //D3
 #define wifi_led 16                         //D0 BUILTINLED
-#define relay_timing 1500
+#define relay_timing 2000
 
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
@@ -24,17 +24,17 @@ byte letter;
 //const char* password = "81956A81qN3nEKbx";
 //const char* ssid = "IOT-Lab";
 //const char* password = "InnovationLab-987";
-const char* ssid = "Luah";
-const char* password = "R0b0t1c4";
-String server_address = "http://192.168.0.104/checkStringID/";
-//String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
+const char* ssid = "PidemeLaContrasenia";
+const char* password = "LadyChewbaca1001";
+//String server_address = "http://192.168.0.104/checkStringID/";
+String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
 String request = "";
 
 
 void setup(void)
 { 
-  //Serial.begin(9600);
+  Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
@@ -51,13 +51,13 @@ void connectWiFi(){
     delay(250);
     digitalWrite(wifi_led, HIGH);
     delay(250);
-    //Serial.print(".");
+    Serial.print(".");
   }
-  /*
+  
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println(WiFi.localIP());
-  */
+  
   return;
 }
 
@@ -70,7 +70,7 @@ void processRFID(){
   }
   //Testing IDs: 22f86c0e, 81007408, 199059D3 //62309331  //199059D3
   content.toUpperCase();
-  //Serial.println(content);
+  Serial.print(content + ",");
   client_id = content;
   content = "";
   return;
@@ -85,9 +85,9 @@ void blink_led(bool access){
         //digitalWrite(relay1, LOW);
       }
       else{
-        digitalWrite(led_404, HIGH);
-        delay(500);
         digitalWrite(led_404, LOW);
+        delay(2000);
+        digitalWrite(led_404, HIGH);
       }
   return;
 }
@@ -99,7 +99,7 @@ void webRequest(){
     int httpCode = http.GET();              //Send the request
     if (httpCode > 0) {                     //Check the returning code
       String payload = http.getString();    //Get the request response payload
-      //Serial.println(payload);              //Print the response payload
+      Serial.println(payload);              //Print the response payload
       if (payload == "true"){
         blink_led(true);  //Access granted
       }
@@ -108,7 +108,7 @@ void webRequest(){
       }
     }
     else{
-      //Serial.println("ServerNotFound");
+      Serial.println("ServerNotFound");
       for(int i = 0; i<5; i++){
         digitalWrite(led_404, LOW);
         delay(100);

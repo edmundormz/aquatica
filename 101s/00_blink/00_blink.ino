@@ -20,5 +20,5 @@ void loop() {
   // it is active low on the ESP-01)
   delay(500);                      // Wait for a second
   digitalWrite(2, HIGH); // Turn the LED off by making the voltage HIGH
-  delay(1000);                      // Wait for two seconds (to demonstrate the active low LED)
+  delay(300);                      // Wait for two seconds (to demonstrate the active low LED)
 }

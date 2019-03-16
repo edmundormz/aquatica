@@ -4,14 +4,15 @@
 #include <ArduinoOTA.h>
 
 #ifndef STASSID
-#define STASSID "PidemeLaContrasenia"
-#define STAPSK  "LadyChewbaca1001"
+#define STASSID "Luah"
+#define STAPSK  "R0b0t1c4"
 #endif
 
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
 void setup() {
+  pinMode(2, OUTPUT);     // Initialize the LED_BUILTIN pin as an output
   Serial.begin(115200);
   Serial.println("Booting");
   WiFi.mode(WIFI_STA);
@@ -26,10 +27,10 @@ void setup() {
   // ArduinoOTA.setPort(8266);
 
   // Hostname defaults to esp8266-[ChipID]
-  // ArduinoOTA.setHostname("myesp8266");
+  ArduinoOTA.setHostname("nodeMCU_1");
 
   // No authentication by default
-  // ArduinoOTA.setPassword("admin");
+  //ArduinoOTA.setPassword("Pass.word0");
 
   // Password can be set with it's md5 value as well
   // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
@@ -74,4 +75,10 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
+  digitalWrite(2, LOW);   // Turn the LED on (Note that LOW is the voltage level
+  // but actually the LED is on; this is because
+  // it is active low on the ESP-01)
+  delay(500);                      // Wait for a second
+  digitalWrite(2, HIGH); // Turn the LED off by making the voltage HIGH
+  delay(250);                      // Wait for two seconds (to demonstrate the active low LED)
 }
