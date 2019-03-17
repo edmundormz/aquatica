@@ -27,7 +27,7 @@ String content;
 byte letter;
 
 //Network variables
-const char* host_name = "node01";
+String node_name = "node_" + String(ESP.getChipId());
 //String server_address = "http://192.168.0.104/checkStringID/";
 String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
@@ -36,6 +36,7 @@ String request = "";
 
 void setup(void)
 { 
+  Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
@@ -54,7 +55,10 @@ void connectWiFi(){
     digitalWrite(wifi_led, HIGH);
     delay(250);
   }
-  MDNS.begin(host_name);
+  WiFi.hostname(node_name);
+  Serial.println("");
+  Serial.println(node_name);
+  MDNS.begin(node_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
   MDNS.addService("http", "tcp", 80);
