@@ -26,8 +26,8 @@ ESP8266HTTPUpdateServer httpUpdater;        //UpdateServer object
 String content;
 byte letter;
 
-//WiFi variables
-const char* host = "node1";
+//Network variables
+const char* host_name = "node01";
 //String server_address = "http://192.168.0.104/checkStringID/";
 String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
@@ -36,7 +36,6 @@ String request = "";
 
 void setup(void)
 { 
-  Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
@@ -49,37 +48,26 @@ void connectWiFi(){
   WiFi.mode(WIFI_STA);                      //Defines ESP8266 as a client, not station
   wifiMulti.addAP("Luah", "R0b0t1c4");
   wifiMulti.addAP("PidemeLaContrasenia", "LadyChewbaca1001");
-  //WiFi.begin(ssid, password);               // Connect to WiFi
   while (wifiMulti.run() != WL_CONNECTED) {
     digitalWrite(wifi_led, LOW);
     delay(250);
     digitalWrite(wifi_led, HIGH);
     delay(250);
-    Serial.print(".");
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println(WiFi.localIP());
-
-  MDNS.begin(host);
+  MDNS.begin(host_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
   MDNS.addService("http", "tcp", 80);
-  Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
-  
   return;
 }
 
 void processRFID(){
   for(byte i = 0; i < mfrc522.uid.size; i++){
-    //Serial.print(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " ");
-    //Serial.print(mfrc522.uid.uidByte[i], HEX);
     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? "0" : ""));
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
   //Testing IDs: 22f86c0e, 81007408, 199059D3 //62309331  //199059D3
   content.toUpperCase();
-  Serial.print(content + ",");
   client_id = content;
   content = "";
   return;
@@ -103,12 +91,10 @@ void blink_led(bool access){
 
 void webRequest(){
     request =  server_address + client_id;
-    //Serial.println(request);
     http.begin(request);                    //Specify request destination
     int httpCode = http.GET();              //Send the request
     if (httpCode > 0) {                     //Check the returning code
       String payload = http.getString();    //Get the request response payload
-      Serial.println(payload);              //Print the response payload
       if (payload == "true"){
         blink_led(true);  //Access granted
       }
@@ -120,16 +106,16 @@ void webRequest(){
       Serial.println("ServerNotFound");
       for(int i = 0; i<5; i++){
         digitalWrite(led_404, LOW);
-        delay(100);
+        delay(200);
         digitalWrite(led_404, HIGH);
-        delay(100);
+        delay(200);
         }
     }
   http.end();                               //Close connection
   return;
 }
 
-void loop() {
+void loop(){
   //Turn off outputs
   digitalWrite(relay1, LOW);
   digitalWrite(relay2, LOW);
@@ -154,6 +140,4 @@ void loop() {
   }
   processRFID();
   webRequest();
-  //Serial.println("End of process");
-  //delay(2000);
   }
