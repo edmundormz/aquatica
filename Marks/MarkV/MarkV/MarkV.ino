@@ -45,6 +45,7 @@ void setup(void)
   pinMode(wifi_led, OUTPUT);
 }
 
+//config test
 void connectWiFi(){
   WiFi.mode(WIFI_STA);                      //Defines ESP8266 as a client, not station
   wifiMulti.addAP("Luah", "R0b0t1c4");
