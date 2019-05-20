@@ -17,11 +17,12 @@ def check_int__id(id):
 
 @app.route("/checkStringID/<id>")
 def check_string_id(id):
-	if id == "81:00:74:08": #Card
-		return "Yes"
-	if id == "19:90:59:D3": #Beacon
-		return "Maybe"
+	if id == "199059D3": #Card
+		return "true"
+	if id == "81007408": #Beacon
+		return "false"
 	return "No"
 
 if __name__ == "__main__":
 	app.run(debug=True, host="0.0.0.0", port=80)
+
