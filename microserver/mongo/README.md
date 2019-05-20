@@ -6,7 +6,8 @@ This guide is focused to `ubuntu OS` in the most recent version so far which is 
 
 1.  Follow the official procedure from [docs.mongodb](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu)
 
-### Enable `mongod` service when system starts
+
+### Enable `mongod` service when system starts
 
 Type the following command:
 
