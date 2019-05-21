@@ -64,7 +64,7 @@ To permanently disable this reminder, run the following command: db.disableFreeM
 `mongo` shell command allows to enter to the databases
 
 2. Type `use aquatica` which will create a new database in the system
-3. Type `db.users.save({userID: "123", authorize: true})` to save a dummy register into `aquatica` local database, otherwise when you exit from mongo the database previouly create wont be saved
+3. Type `db.users.save({userID: "123", authorize: true})` to save a dummy register into `aquatica` local database, otherwise when you exit from mongo the database previously create wont be saved
 
 ## Connecting Services with Python
 
@@ -81,14 +81,13 @@ $ pip install pymongo
 $ sudo apt install ipython
 ```
 
-### 
 
 ### Connection Script
 
 ```python
 import pymongo
 
-maxSevSelDelay = 1 # connection delay in milliseconds
+maxSevSelDelay = 3 # connection delay in milliseconds
 
 try:
     client = pymongo.MongoClient('mongodb://localhost:27017/')
