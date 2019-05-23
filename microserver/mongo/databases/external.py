@@ -13,7 +13,7 @@ class Database(object):
         :param user_id: the userID to check in the external database
         """
         # api-endpoint
-        self.api_endpoint = 'http://10.144.33.79/checkStringID/{}'.format(user_id)
+        self.api_endpoint = 'http://142.93.93.25/api/Students/canPass?nfcId={}'.format(user_id)
 
     def get_response(self):
         """Get response from external server
@@ -33,7 +33,7 @@ class Database(object):
             # sending get request and saving the response as response object
             response = requests.get(url=self.api_endpoint, timeout=timeout)
             data = {'status': 'connected', 'response': 'No'} if response.text == 'No' \
-                else {'status': 'connected', 'response': response.json()}
+                else {'status': 'connected', 'response': response.text}
             return data  # returns a boolean
         except requests.ConnectTimeout as err:
             print('(error) - failed to connect to external database due to: {}'.format(err))
