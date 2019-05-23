@@ -50,7 +50,7 @@ class Database(object):
         - True: If the userID is authorized to access
         - False: if the userID is not authorized to access
         """
-        authorize = self.collection.find_one({'userID': self.user_id}, {'authorize': 1})  # returns authorize dict
+        authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 1})  # returns authorize dict
         user_is_authorized = True if authorize else False
 
         return user_is_authorized
