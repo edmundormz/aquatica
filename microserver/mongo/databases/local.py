@@ -56,9 +56,4 @@ class Database(object):
             print('(info) - record successfully inserted: {}'.format(data_to_insert))
         else:
             # the record already exists in db
-            update = self.collection.update_one(_id, {'$set': data_to_insert}, upsert=True)
-            if update.modified_count > 0:
-                print('(info) - the record: ({}) was successfully updated'.format(data_to_insert))
-            else:
-                print('(info) - the record: ({}) was not changed'.format(data_to_insert))
-
+            self.collection.update_one(_id, {'$set': data_to_insert}, upsert=True)
