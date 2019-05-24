@@ -26,20 +26,6 @@ class Database(object):
         self.db = self.client['aquatica']
         self.collection = self.db['users']
 
-    def check_user_id(self):
-        """Check an user id
-
-        Perform a query into a specific collection returning specific fields
-
-        :return:
-        - True: If the userID exists
-        - False: if the userID does not exists
-        """
-        user_id = self.collection.find_one({'userID': self.user_id})  # returns the userID (if any)
-        user_exist = True if user_id else False
-
-        return user_exist
-
     def is_authorized(self):
         """Check if and user id is authorized to access
 
@@ -49,10 +35,8 @@ class Database(object):
         - True: If the userID is authorized to access
         - False: if the userID is not authorized to access
         """
-        authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 1})  # returns authorize dict
-        user_is_authorized = True if authorize else False
-
-        return user_is_authorized
+        authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 'true'})  # returns authorize dict
+        return True if authorize else False
 
     def insert_or_update_user_id(self, authorized):
         """Insert or update an userID
