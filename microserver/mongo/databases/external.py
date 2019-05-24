@@ -21,7 +21,6 @@ class Database(object):
         The external server can returns the following values:
         - String:true: => when a userID exists in the database and has access
         - String:false => when a userID exists in the database and has not access
-        - String:No    => when a userID is not in database
 
         :return:
             - a dictionary that contains if the connection was established or not and the response received from
@@ -32,10 +31,10 @@ class Database(object):
         try:
             # sending get request and saving the response as response object
             response = requests.get(url=self.api_endpoint, timeout=timeout)
-            data = {'status': 'connected', 'response': 'No'} if response.text == 'No' \
+            data = {'status': 'connected', 'response': 'false'} if response.text == 'false' \
                 else {'status': 'connected', 'response': response.text}
-            return data  # returns a boolean
+            return data
         except requests.ConnectTimeout as err:
             print('(error) - failed to connect to external database due to: {}'.format(err))
-            return {'status': 'disconnected', 'response': False}
+            return {'status': 'disconnected', 'response': 'false'}
 
