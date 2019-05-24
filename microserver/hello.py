@@ -30,28 +30,23 @@ def external_check_user_id(user_id):
     if response['status'] == 'connected':
         print('(info) - connected to external database, checking userID')
 
-        if response['response'] != 'No':
-            # (userID exists in external database): update local database with the user (if any)
+        if response['response'] == 'true':
             local_db.insert_or_update_user_id(response['response'])
-
-            return '{}'.format(response['response'])
+            return 'true'
+        elif response['response'] == 'false':
+            local_db.insert_or_update_user_id(response['response'])
+            return 'false'
+        elif local_db.is_authorized():
+            return 'true'
         else:
-            print('(warning) - userID ({}): does not exists in external database thus has not access'.format(user_id))
             return 'false'
     else:
         print('(warning) - could not connected to external database, checking userID from internal database')
-
         # Check if the user exists and is authorized in local database
-        if local_db.check_user_id() and local_db.is_authorized():
+        if local_db.is_authorized():
             return 'true'
-        elif local_db.check_user_id() and not local_db.is_authorized():
+        else:
             return 'false'
-        elif not local_db.check_user_id():
-            print('(info) - userID: ({}): does not has any record in local database'.format(user_id))
-            print('(info) - TIP: the next time that connected to external database (if the userID exists) it will '
-                  'be insert in local database to consult it')
-            return 'false'
-
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=80)
