@@ -14,7 +14,6 @@ class Database(object):
         Once this class is instanciate the connection will perform to be use in the class functions
 
         :param user_id: the user id to check
-        :param authorized: a bool value
         """
         self.user_id = user_id
 
@@ -36,7 +35,7 @@ class Database(object):
         - True: If the userID exists
         - False: if the userID does not exists
         """
-        user_id = self.collection.find_one({'userID': self.user_id}, {'userID': 1})  # returns the userID (if any)
+        user_id = self.collection.find_one({'userID': self.user_id})  # returns the userID (if any)
         user_exist = True if user_id else False
 
         return user_exist
