@@ -35,8 +35,8 @@ class Database(object):
         - True: If the userID is authorized to access
         - False: if the userID is not authorized to access
         """
-        authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 'true'})  # returns authorize dict
-        return True if authorize else False
+        authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 1})  # returns authorize dict
+        return True if authorize['authorized'] == 'true' else False
 
     def insert_or_update_user_id(self, authorized):
         """Insert or update an userID
