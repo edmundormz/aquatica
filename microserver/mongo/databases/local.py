@@ -5,7 +5,7 @@ import pymongo
 
 class Database(object):
 
-    INTERNAL_URI = 'mongodb://localhost:27017/'
+    INTERNAL_URI = 'mongodb://localhost:27017'
     MAX_SER_SEL_DELAY = 3  # connection delay in milliseconds
 
     def __init__(self, user_id):
