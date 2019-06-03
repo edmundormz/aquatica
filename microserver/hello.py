@@ -14,7 +14,7 @@ import mongo.databases.external as external_db
 app = Flask(__name__)
 
 
-@app.route('/check_user_id/<user_id>/', methods=['GET'])
+@app.route('/check_user_id/<user_id>', methods=['GET'])
 def external_check_user_id(user_id):
     """Check if a userID exists in external database
 
