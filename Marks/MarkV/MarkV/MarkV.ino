@@ -29,14 +29,12 @@ byte letter;
 //Network variables
 String node_name = "node_" + String(ESP.getChipId());
 String server_addresses[2] = {"http://192.168.100.106/check_user_id/", "http://142.93.93.25/api/Students/canPass?nfcId="};
-//String server_address_1 = "http://192.168.100.106/check_user_id/"; 
-//String server_address_2 = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
 String request = "";
 
-
 void setup(void)
 { 
+  //System initialization
   Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
@@ -45,9 +43,15 @@ void setup(void)
   pinMode(relay2, OUTPUT);
   pinMode(wifi_led, OUTPUT);
   http.setTimeout(1000);
+
+  //Turn off outputs
+  digitalWrite(relay1, LOW);
+  digitalWrite(relay2, LOW);
+  digitalWrite(wifi_led, HIGH);
+  digitalWrite(led_404, HIGH);
 }
 
-//config test
+
 void connectWiFi(){
   WiFi.mode(WIFI_STA);                      //Defines ESP8266 as a client, not station
   wifiMulti.addAP("Totalplay-8195", "81956A81qN3nEKbx");
@@ -129,12 +133,6 @@ void webRequest(){
 }
 
 void loop(){
-  //Turn off outputs
-  digitalWrite(relay1, LOW);
-  digitalWrite(relay2, LOW);
-  digitalWrite(wifi_led, HIGH);
-  digitalWrite(led_404, HIGH);
-  
   
   //Check WiFi connection
   if(WiFi.status() != WL_CONNECTED){
@@ -145,12 +143,13 @@ void loop(){
   MDNS.update();
   
   //RFID Card detection
-  if (!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
+  if(!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
     return;
   }
   if(!mfrc522.PICC_ReadCardSerial()){       //Select one of the cards
     return;
   }
+  
   processRFID();
   webRequest();
   }
