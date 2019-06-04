@@ -28,8 +28,9 @@ byte letter;
 
 //Network variables
 String node_name = "node_" + String(ESP.getChipId());
-//String server_address = "http://192.168.0.104/checkStringID/";
-String server_address = "http://142.93.93.25/api/Students/canPass?nfcId=";
+String server_addresses[2] = {"http://192.168.100.106/check_user_id/", "http://142.93.93.25/api/Students/canPass?nfcId="};
+//String server_address_1 = "http://192.168.100.106/check_user_id/"; 
+//String server_address_2 = "http://142.93.93.25/api/Students/canPass?nfcId=";
 String client_id = "";
 String request = "";
 
@@ -43,13 +44,14 @@ void setup(void)
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
   pinMode(wifi_led, OUTPUT);
+  http.setTimeout(1000);
 }
 
 //config test
 void connectWiFi(){
   WiFi.mode(WIFI_STA);                      //Defines ESP8266 as a client, not station
-  wifiMulti.addAP("Luah", "R0b0t1c4");
-  wifiMulti.addAP("PidemeLaContrasenia", "LadyChewbaca1001");
+  wifiMulti.addAP("Totalplay-8195", "81956A81qN3nEKbx");
+  //wifiMulti.addAP("PidemeLaContrasenia", "LadyChewbaca1001");
   while (wifiMulti.run() != WL_CONNECTED) {
     digitalWrite(wifi_led, LOW);
     delay(250);
@@ -57,8 +59,8 @@ void connectWiFi(){
     delay(250);
   }
   WiFi.hostname(node_name);
-  Serial.println("");
-  Serial.println(node_name);
+  //Serial.println("");
+  //Serial.println(node_name);
   MDNS.begin(node_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
@@ -72,7 +74,7 @@ void processRFID(){
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
   //Testing IDs: 22f86c0e, 81007408, 199059D3 //62309331  //199059D3
-  content.toUpperCase();
+  //content.toUpperCase();
   client_id = content;
   content = "";
   return;
@@ -95,18 +97,23 @@ void blink_led(bool access){
 }
 
 void webRequest(){
-    request =  server_address + client_id;
+    for (int i=0; i<2; i++){
+    request =  server_addresses[i] + client_id;
+    Serial.println(request);
     http.begin(request);                    //Specify request destination
     int httpCode = http.GET();              //Send the request
     if (httpCode > 0) {                     //Check the returning code
       String payload = http.getString();    //Get the request response payload
+      Serial.println(payload);
       if (payload == "true"){
         blink_led(true);  //Access granted
       }
       else{
         blink_led(false); //Access denied
       }
+      break;
     }
+    //second server address
     else{
       Serial.println("ServerNotFound");
       for(int i = 0; i<5; i++){
@@ -117,6 +124,7 @@ void webRequest(){
         }
     }
   http.end();                               //Close connection
+    }
   return;
 }
 
