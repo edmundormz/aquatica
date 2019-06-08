@@ -13,8 +13,8 @@
 #define relay2 2                            //D4
 #define led_404 0                           //D3
 #define wifi_led 16                         //D0 BUILTINLED
-#define relay_timing 2000                   //Time to leave the relays closed
-
+#define access_relay_timing 2000                   //Time to leave the relays closed
+#define block_relay_timing 2000
 
 ESP8266WiFiMulti wifiMulti;                 //WiFi Multi object
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
@@ -63,8 +63,7 @@ void connectWiFi(){
     delay(250);
   }
   WiFi.hostname(node_name);
-  //Serial.println("");
-  //Serial.println(node_name);
+  Serial.println(node_name);
   MDNS.begin(node_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
@@ -77,8 +76,6 @@ void processRFID(){
     content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? "0" : ""));
     content.concat(String(mfrc522.uid.uidByte[i], HEX));
   }
-  //Testing IDs: 22f86c0e, 81007408, 199059D3 //62309331  //199059D3
-  //content.toUpperCase();
   client_id = content;
   content = "";
   return;
@@ -87,14 +84,16 @@ void processRFID(){
 void blink_led(bool access){
   if (access == true){
         digitalWrite(relay2, HIGH);
-        //digitalWrite(relay1, HIGH);
-        delay(relay_timing);
+        digitalWrite(wifi_led, LOW);
+        delay(access_relay_timing);
         digitalWrite(relay2, LOW);
-        //digitalWrite(relay1, LOW);
+        digitalWrite(wifi_led, HIGH);
       }
       else{
+        digitalWrite(relay1, HIGH);
         digitalWrite(led_404, LOW);
-        delay(2000);
+        delay(block_relay_timing);
+        digitalWrite(relay1, LOW);
         digitalWrite(led_404, HIGH);
       }
   return;
@@ -102,31 +101,31 @@ void blink_led(bool access){
 
 void webRequest(){
     for (int i=0; i<2; i++){
-    request =  server_addresses[i] + client_id;
-    Serial.println(request);
-    http.begin(request);                    //Specify request destination
-    int httpCode = http.GET();              //Send the request
-    if (httpCode > 0) {                     //Check the returning code
-      String payload = http.getString();    //Get the request response payload
-      Serial.println(payload);
-      if (payload == "true"){
-        blink_led(true);  //Access granted
+      request =  server_addresses[i] + client_id;
+      Serial.println(request);
+      http.begin(request);                    //Specify request destination
+      int httpCode = http.GET();              //Send the request
+      if (httpCode > 0) {                     //Check the returning code
+        String payload = http.getString();    //Get the request response payload
+        Serial.println(payload);
+        if (payload == "true"){
+          blink_led(true);  //Access granted
+        }
+        else{
+          blink_led(false); //Access denied
+        }
+        break;
       }
       else{
-        blink_led(false); //Access denied
+        Serial.println("ServerNotFound");
+        for(int i = 0; i<5; i++){
+          digitalWrite(led_404, LOW);
+          delay(200);
+          digitalWrite(led_404, HIGH);
+          delay(200);
+          }
       }
-      break;
-    }
-    else{
-      Serial.println("ServerNotFound");
-      for(int i = 0; i<5; i++){
-        digitalWrite(led_404, LOW);
-        delay(200);
-        digitalWrite(led_404, HIGH);
-        delay(200);
-        }
-    }
-  http.end();                               //Close connection
+    http.end();                               //Close connection
     }
   return;
 }
