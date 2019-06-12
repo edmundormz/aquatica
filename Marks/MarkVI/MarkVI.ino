@@ -13,8 +13,8 @@
 #define relay2 2                            //D4
 #define led_404 0                           //D3
 #define wifi_led 16                         //D0 BUILTINLED
-#define access_relay_timing 2000                   //Time to leave the relays closed
-#define block_relay_timing 2000
+#define access_relay_timing 1000                   //Time to leave the relays closed
+#define block_relay_timing 1000
 
 ESP8266WiFiMulti wifiMulti;                 //WiFi Multi object
 MFRC522 mfrc522(SS_PIN, RST_PIN);           //MFRC522 object
@@ -28,21 +28,21 @@ byte letter;
 
 //Network variables
 String node_name = "node_" + String(ESP.getChipId());
-String server_addresses[2] = {"http://192.168.100.106/check_user_id/", "http://142.93.93.25/api/Students/canPass?nfcId="};
+String server_addresses[2] = {"http://192.168.0.150/check_user_id/", "http://142.93.93.25/api/Students/canPass?nfcId="};
 String client_id = "";
 String request = "";
 
 void setup(void)
 { 
   //System initialization
-  Serial.begin(115200);
+  //Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
   pinMode(wifi_led, OUTPUT);
-  http.setTimeout(1000);
+  //http.setTimeout(1000);
 
   //Turn off outputs
   digitalWrite(relay1, LOW);
@@ -54,16 +54,18 @@ void setup(void)
 
 void connectWiFi(){
   WiFi.mode(WIFI_AP_STA);
-  wifiMulti.addAP("Totalplay-8195", "81956A81qN3nEKbx");
-  wifiMulti.addAP("INFINITUMGXYZ_2.4", "u6TvfyzDmU");
+  wifiMulti.addAP("TorniquetesDelfines", "Aquatica");
+  //wifiMulti.addAP("AcuaticaDelfines", "CorchoTiburon");
+  wifiMulti.addAP("HecMundo", "password");
   while (wifiMulti.run() != WL_CONNECTED) {
     digitalWrite(wifi_led, LOW);
-    delay(250);
+    delay(100);
     digitalWrite(wifi_led, HIGH);
-    delay(250);
+    delay(100);
   }
+  //WiFi.begin(ssid, password);   
   WiFi.hostname(node_name);
-  Serial.println(node_name);
+  //Serial.println(node_name);
   MDNS.begin(node_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
@@ -102,43 +104,44 @@ void blink_led(bool access){
 void webRequest(){
     for (int i=0; i<2; i++){
       request =  server_addresses[i] + client_id;
-      Serial.println(request);
+      //Serial.println(request);
       http.begin(request);                    //Specify request destination
       int httpCode = http.GET();              //Send the request
       if (httpCode > 0) {                     //Check the returning code
         String payload = http.getString();    //Get the request response payload
-        Serial.println(payload);
+        //Serial.println(payload);
         if (payload == "true"){
+          http.end();
           blink_led(true);  //Access granted
         }
         else{
+          http.end();
           blink_led(false); //Access denied
         }
         break;
       }
       else{
-        Serial.println("ServerNotFound");
-        for(int i = 0; i<5; i++){
+        http.end();
+        //Serial.println("ServerNotFound");
+        for(int i = 0; i<3; i++){
           digitalWrite(led_404, LOW);
           delay(200);
           digitalWrite(led_404, HIGH);
           delay(200);
           }
       }
-    http.end();                               //Close connection
+    //http.end();                               //Close connection
     }
   return;
 }
 
 void loop(){
-  
+  httpServer.handleClient();
+  MDNS.update();
   //Check WiFi connection
   if(WiFi.status() != WL_CONNECTED){
     connectWiFi();
   }
-
-  httpServer.handleClient();
-  MDNS.update();
   
   //RFID Card detection
   if(!mfrc522.PICC_IsNewCardPresent()){    //Look for cards
