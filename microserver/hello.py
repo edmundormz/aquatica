@@ -43,9 +43,14 @@ def external_check_user_id(user_id):
     else:
         print('(warning) - could not connected to external database, checking userID from internal database')
         # Check if the user exists and is authorized in local database
-        if local_db.is_authorized():
+        if local_db.check_user_id() and local_db.is_authorized():
             return 'true'
-        else:
+        elif local_db.check_user_id() and not local_db.is_authorized():
+            return 'false'
+        elif not local_db.check_user_id():
+            print('(info) - userID: ({}): does not has any record in local database'.format(user_id))
+            print('(info) - TIP: the next time that connected to external database (if the userID exists) it will '
+                  'be insert in local database to consult it')
             return 'false'
 
 if __name__ == "__main__":
