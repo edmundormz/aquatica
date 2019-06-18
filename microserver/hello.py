@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Remember to:
 # export FLASK_APP=hello.py (this file name)
 # To make server externally visible use: --host=0.0.0.0 (flask run --host=0.0.0.0)
