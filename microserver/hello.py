@@ -31,7 +31,6 @@ def external_check_user_id(user_id):
 
     if response['status'] == 'connected':
         print('(info) - connected to external database, checking userID')
-
         if response['response'] == 'true':
             local_db.insert_or_update_user_id(response['response'])
             return 'true'

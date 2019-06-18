@@ -35,7 +35,8 @@ class Database(object):
         - True: If the userID exists
         - False: if the userID does not exists
         """
-        user_id = self.collection.find_one({'userID': self.user_id}, {'userID': 1})  # returns the userID (if any)
+        #user_id = self.collection.find_one({'userID': self.user_id}, {'userID': 1})  # returns the userID (if any)
+        user_id = self.collection.find_one({'userID': self.user_id})  # returns the userID (if any)
         user_exist = True if user_id else False
 
         return user_exist
@@ -49,6 +50,8 @@ class Database(object):
         - True: If the userID is authorized to access
         - False: if the userID is not authorized to access
         """
+        #authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 'true'})  # returns authorize dict
+        #return True if authorize else False
         authorize = self.collection.find_one({'userID': self.user_id}, {'authorized': 1})  # returns authorize dict
         return True if authorize['authorized'] == 'true' else False
 
