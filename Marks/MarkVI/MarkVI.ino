@@ -13,7 +13,7 @@
 #define relay2 2                            //D4
 #define led_404 0                           //D3
 #define wifi_led 16                         //D0 BUILTINLED
-#define access_relay_timing 1000                   //Time to leave the relays closed
+#define access_relay_timing 500                   //Time to leave the relays closed
 #define block_relay_timing 1000
 
 ESP8266WiFiMulti wifiMulti;                 //WiFi Multi object
@@ -35,14 +35,12 @@ String request = "";
 void setup(void)
 { 
   //System initialization
-  //Serial.begin(115200);
   SPI.begin();
   mfrc522.PCD_Init();
   pinMode(led_404, OUTPUT);
   pinMode(relay1, OUTPUT);
   pinMode(relay2, OUTPUT);
   pinMode(wifi_led, OUTPUT);
-  //http.setTimeout(1000);
 
   //Turn off outputs
   digitalWrite(relay1, LOW);
@@ -56,16 +54,14 @@ void connectWiFi(){
   WiFi.mode(WIFI_AP_STA);
   wifiMulti.addAP("TorniquetesDelfines", "Aquatica");
   //wifiMulti.addAP("AcuaticaDelfines", "CorchoTiburon");
-  wifiMulti.addAP("HecMundo", "password");
+  //wifiMulti.addAP("HecMundo", "password");
   while (wifiMulti.run() != WL_CONNECTED) {
     digitalWrite(wifi_led, LOW);
     delay(100);
     digitalWrite(wifi_led, HIGH);
     delay(100);
-  }
-  //WiFi.begin(ssid, password);   
+  }   
   WiFi.hostname(node_name);
-  //Serial.println(node_name);
   MDNS.begin(node_name);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
@@ -104,8 +100,8 @@ void blink_led(bool access){
 void webRequest(){
     for (int i=0; i<2; i++){
       request =  server_addresses[i] + client_id;
-      //Serial.println(request);
       http.begin(request);                    //Specify request destination
+      http.setTimeout(1000);                  //Waits 1 sec for server response
       int httpCode = http.GET();              //Send the request
       if (httpCode > 0) {                     //Check the returning code
         String payload = http.getString();    //Get the request response payload
@@ -121,16 +117,9 @@ void webRequest(){
         break;
       }
       else{
-        http.end();
-        //Serial.println("ServerNotFound");
-        for(int i = 0; i<3; i++){
-          digitalWrite(led_404, LOW);
-          delay(200);
-          digitalWrite(led_404, HIGH);
-          delay(200);
-          }
+        http.end(); //Server not found, close connection
+          
       }
-    //http.end();                               //Close connection
     }
   return;
 }
